@@ -1019,7 +1019,14 @@ function Editor(editorUi, wrapperUi, editorCfg, data, name="editor"){
         let meta = this.data.get_current_world_scene_meta();
 
         
-        let allLoaded = worldList.map(w=>w.preloaded()).reduce((a,b)=>a && b, true);
+        // let allLoaded = worldList.map(w=>w.preloaded()).reduce((a,b)=>a && b, true);
+        let allLoaded = worldList.map((w, index) => {
+            const isPreloaded = typeof w.preloaded === 'function' && w.preloaded();
+            if (!isPreloaded) {
+                console.log(`World not preloaded at index ${index}:`, w.frameInfo ? w.frameInfo.frame_index : 'No frame info');
+            }
+            return isPreloaded;
+        }).reduce((a, b) => a && b, true);
 
         if ((worldList.length < meta.frames.length && worldList.length <= 60) || (!allLoaded))
         {
